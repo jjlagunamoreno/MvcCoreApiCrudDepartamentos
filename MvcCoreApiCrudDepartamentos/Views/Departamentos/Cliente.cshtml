@@ -1,118 +1,106 @@
 ﻿@section Scripts{
+	<script src="~/js/serviceapidepartamentos.js"></script>
 	<script>
-		let url= "https://apicoredepartamentosjjlm2025.azurewebsites.net/";
+		//let url= "https://apicoredepartamentosjjlm2025.azurewebsites.net/";
 		$(document).ready(function(){
 			loadDepartamentos();
 
-			$("#botoninsert").click(function(){
+			$("#botoninsert").click(function () {
 				let id = parseInt($("#cajaid").val());
 				let nombre = $("#cajanombre").val();
 				let loc = $("#cajalocalidad").val();
-				//CREAMOS UN OBJETO JS CON LAS MISMAS PROPIEDADES QUE EL JSON DEL SERVICIO
-				let dept = new Object();
-				dept.idDepartamento = id;
-				dept.nombre = nombre;
-				dept.localidad = loc;
 
-				var json =JSON.stringify(dept);
-				var request = "api/departamentos";
-				$.ajax({
-					url: url + request,
-					type: "POST",
-					data: json,
-					contentType: "application/json",
-					success: function() {
-						loadDepartamentos();
-					}
-				})
-			})
+				//CREAMOS UN OBJETO JS CON LAS MISMAS PROPIEDADES QUE EL JSON DEL SERVICIO
+				// let dept = new Object();
+				// dept.idDepartamento = id;
+				// dept.nombre = nombre;
+				// dept.localidad = loc;
+
+				// var json =JSON.stringify(dept);
+				// var request = "api/departamentos";
+				// $.ajax({
+				// 	url: url + request,
+				// 	type: "POST",
+				// 	data: json,
+				// 	contentType: "application/json",
+				// 	success: function() {
+				// 		loadDepartamentos();
+				// 	}
+				// })
+
+				insertDepartamentoAsync(id, nombre, loc, function () {
+					loadDepartamentos();
+				});
+			});
+
 
 			$("#botonupdate").click(function(){
 				let id = parseInt($("#cajaid").val());
 				let nombre = $("#cajanombre").val();
-				let loc = $("#cajalocalidad").val();
-				let dept = new Object();
-				dept.idDepartamento = id;
-				dept.nombre = nombre;
-				dept.localidad = loc;
-
-				var json =JSON.stringify(dept);
-				var request = "api/departamentos";
-				$.ajax({
-					url: url + request,
-					type: "PUT",
-					data: json,
-					contentType: "application/json",
-					success: function() {
-						loadDepartamentos();
-					}
+				let localidad = $("#cajalocalidad").val();
+				updateDepartamentoAsync(id, nombre, localidad, function(){
+					loadDepartamentos();
 				})
 			})
 
 			$("#botondelete").click(function() {
 				let id = $("#cajaid").val();
-				let request = "api/departamentos/" + id;
-				$.ajax({
-					url: url + request,
-					type: "DELETE",
-					success: function(){
-						loadDepartamentos();
-					}
+				deleteDepartamentoAsync(id, function(){
+					loadDepartamentos();
 				})
 			})
 		})
 
 		function loadDepartamentos() {
-			let request = "api/departamentos";
-			$.ajax({
-				url: url + request,
-				type: "GET",
-				dataType: "json",
-				success: function(data){
-					var html = "";
-					$.each(data, function(index, dept){
-						html += "<tr>";
-						html += "<td>" + dept.idDepartamento + "</td>";
-						html += "<td>" + dept.nombre + "</td>";
-						html += "<td>" + dept.localidad + "</td>";
-						html += "</tr>";
-					})
-					$("#tabladepartamentos tbody").html(html);
-				}
-			})
+			getDepartamentosAsync(function(data) {
+				var html = "";
+				$.each(data, function(index, dept){
+					html += "<tr>";
+					html += "<td>" + dept.idDepartamento + "</td>";
+					html += "<td>" + dept.nombre + "</td>";
+					html += "<td>" + dept.localidad + "</td>";
+					html += "</tr>";
+				})
+				$("#tabladepartamentos tbody").html(html);
+			});
 		}
 	</script>
 }
 
-<h1>Cliente Api Crud Departamentos</h1>
+<h1 class="text-primary text-center mb-4">Cliente API CRUD Departamentos</h1>
 
-<from>
-	<label>Id Departamentos</label>
-	<input type="text" id="cajaid" class="form-control"/>
-	<label>Nombre</label>
-	<input type="text" id="cajanombre" class="form-control" />
-	<label>Localidad</label>
-	<input type="text" id="cajalocalidad" class="form-control" />
+<div class="container">
+	<form>
+		<div class="row mb-3">
+			<div class="col">
+				<label class="form-label">Id Departamento</label>
+				<input type="text" id="cajaid" class="form-control" />
+			</div>
+			<div class="col">
+				<label class="form-label">Nombre</label>
+				<input type="text" id="cajanombre" class="form-control" />
+			</div>
+			<div class="col">
+				<label class="form-label">Localidad</label>
+				<input type="text" id="cajalocalidad" class="form-control" />
+			</div>
+		</div>
 
-	<button type="button" class="btn btn-warning" id="botoninsert">
-		Insertar
-	</button>
-	<button type="button" class="btn btn-info" id="botonupdate">
-		Modificar
-	</button>
-	<button type="button" class="btn btn-danger" id="botondelete">
-		Borrar
-	</button>
-</from>
+		<div class="d-flex gap-2 mb-4">
+			<button type="button" class="btn btn-warning" id="botoninsert">Insertar</button>
+			<button type="button" class="btn btn-info" id="botonupdate">Modificar</button>
+			<button type="button" class="btn btn-danger" id="botondelete">Borrar</button>
+		</div>
+	</form>
 
-<table class="table table-bordered" id="tabladepartamentos">
-	<thead>
-		<tr>
-			<th>Id</th>
-			<th>Nombre</th>
-			<th>Localidad</th>
-		</tr>
-	</thead>
-	<tbody></tbody>
-</table>
-
+	<table class="table table-bordered table-striped" id="tabladepartamentos">
+		<thead class="table-dark">
+			<tr>
+				<th>Id</th>
+				<th>Nombre</th>
+				<th>Localidad</th>
+			</tr>
+		</thead>
+		<tbody></tbody>
+	</table>
+</div>
